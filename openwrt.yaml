@@ -63,6 +63,15 @@
         connect_timeout: 5
         timeout: 600
 
+    - name: Check if internet connection is available
+      community.openwrt.command:
+        cmd: ping -c1 openwrt.org
+        uses_shell: true
+      register: network_reacable
+      until: network_reacable.rc == 0
+      delay: 30
+      retries: 60 # wait max 30 minutes for internet connection
+
     - name: Ensure reboot after configuration
       when: firmware != '' and not latest_version_installed
       ansible.builtin.set_fact:
